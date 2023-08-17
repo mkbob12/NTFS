@@ -13,3 +13,6 @@
    ex) 10진수로 클러스터 값을 출력하면 됨.
    Cluster Start: 1230, Size: 30
    Cluster Start: 1800(절대위치여야 함.), Size: 60
+
+[링크]
+https://kali-km.tistory.com/entry/NTFS-File-System-5

@@ -13,10 +13,17 @@ struct ntfs_boot_sector
     uint8_t sector_per_cluster[1];
     uint8_t reserved_sectors[2];
     uint8_t reserved1[5];
-    uint8_t reserved2[18];
+    uint8_t reserved2[1];
+    uint8_t reserved3[18];
     uint8_t total_sectors[8];
     uint8_t start[8];
     uint8_t mirr[8];
+};
+
+struct fixarray
+{
+    uint8_t fixarray_offset[8];
+    uint16_t fixarray_total;
 };
 
 int main()
@@ -67,13 +74,28 @@ int main()
     printf("\n");
 
     // mtf 첫번째 주소 계산
-    uint64_t ntfs_address;
+    int64_t ntfs_address;
     ntfs_address = ntfs_sector.bytes_per_sector[0] + (ntfs_sector.bytes_per_sector[1] << 8);
     ntfs_address *= ntfs_sector.sector_per_cluster[0];
-    ntfs_address *= *reinterpret_cast<uint64_t *>(ntfs_sector.start);
+    ntfs_address *= *reinterpret_cast<int64_t *>(ntfs_sector.start);
     printf("ntfs_address %llx\n", ntfs_address);
 
-    return 0;
+    // fix up  array로 가기
+    fixarray fix;
+    file.seekg(ntfs_address + 0x30, ios::beg);
+    file.read((char *)&fix, sizeof(fix));
+    printf("fixarray_offset ");
+    for (int i = 0; i < 8; i++)
+    {
+        printf("%02X ", fix.fixarray_offset[i]);
+    }
+    printf("\n");
+
+    // fix up 마지막 배열과 같다면 그 뒤 2바이트 변경하기
+
+    // for (int i = 0; i < )
+
+    // return 0;
 }
 
 void *little_endian_address(void *big_endian_address, size_t address_size)
